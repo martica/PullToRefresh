@@ -108,7 +108,9 @@
             } else { 
                 // User is scrolling somewhere within the header
                 self.refreshLabel.text = self.textPull;
-                [self.refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
+                CGFloat proportion = (REFRESH_HEADER_HEIGHT - scrollView.contentOffset.y) / REFRESH_HEADER_HEIGHT;
+                proportion = MAX(2*(proportion-1),1.0);
+                [self.refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * (1+proportion), 0, 0, 1);
             }
         }];
     }
