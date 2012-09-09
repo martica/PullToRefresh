@@ -46,6 +46,8 @@
 - (void)setupStrings;
 - (void)addPullToRefreshHeader;
 - (void)startLoading;
+- (void)continueLoading;
+- (void)showLoadingHeader;
 - (void)stopLoading;
 - (void)refresh;
 

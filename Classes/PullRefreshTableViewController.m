@@ -128,6 +128,19 @@
 - (void)startLoading {
     self.isLoading = YES;
     
+    [self showLoadingHeader];
+    
+    // Refresh action!
+    [self refresh];
+}
+
+- (void)continueLoading {
+    self.isLoading = YES;
+
+    [self showLoadingHeader];
+}
+
+- (void)showLoadingHeader {
     // Show the header
     [UIView animateWithDuration:0.3 animations:^{
         self.refreshableTableView.contentInset = UIEdgeInsetsMake(REFRESH_HEADER_HEIGHT, 0, 0, 0);
@@ -135,9 +148,6 @@
         self.refreshArrow.hidden = YES;
         [self.refreshSpinner startAnimating];
     }];
-    
-    // Refresh action!
-    [self refresh];
 }
 
 - (void)stopLoading {
