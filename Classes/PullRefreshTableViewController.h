@@ -30,7 +30,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface PullRefreshTableViewController : UIViewController <UIScrollViewDelegate>
+@interface PullRefreshTableViewController : UIViewController
 
 @property (nonatomic, strong) UITableView *refreshableTableView;
 @property (nonatomic, strong) UIView *refreshHeaderView;
@@ -42,6 +42,7 @@
 @property (nonatomic, copy) NSString *textLoading;
 @property (nonatomic, assign) BOOL isDragging;
 @property (nonatomic, assign) BOOL isLoading;
+@property (nonatomic, assign) BOOL isRefreshable;
 
 - (void)setupStrings;
 - (void)addPullToRefreshHeader;

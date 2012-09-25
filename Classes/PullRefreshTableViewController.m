@@ -53,7 +53,23 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  [self addPullToRefreshHeader];
+}
+
+- (void)setIsRefreshable:(BOOL)isRefreshable {
+    if (_isRefreshable == isRefreshable) {
+        return;
+    }
+
+    _isRefreshable = isRefreshable;
+
+    if (isRefreshable) {
+        [self addPullToRefreshHeader];
+    } else {
+        if ([self isLoading]) {
+            [self stopLoading];
+        }
+        [self removePullToRefreshHeader];
+    }
 }
 
 - (void)setupStrings{
@@ -62,9 +78,13 @@
   _textLoading = @"Loading...";
 }
 
-- (void)addPullToRefreshHeader {
-    self.refreshHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
-    self.refreshHeaderView.backgroundColor = [UIColor clearColor];
+- (UIView *)refreshHeaderView {
+    if (_refreshHeaderView) {
+        return _refreshHeaderView;
+    }
+
+    _refreshHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
+    _refreshHeaderView.backgroundColor = [UIColor clearColor];
 
     self.refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEADER_HEIGHT)];
     self.refreshLabel.backgroundColor = [UIColor clearColor];
@@ -73,25 +93,36 @@
 
     self.refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rotatingRefreshArrow.png"]];
     self.refreshArrow.frame = CGRectMake(floorf((REFRESH_HEADER_HEIGHT - 27) / 2),
-                                    (floorf(REFRESH_HEADER_HEIGHT - 44) / 2),
-                                    27, 44);
+                                         (floorf(REFRESH_HEADER_HEIGHT - 44) / 2),
+                                         27, 44);
 
     self.refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.refreshSpinner.frame = CGRectMake(floorf(floorf(REFRESH_HEADER_HEIGHT - 20) / 2), floorf((REFRESH_HEADER_HEIGHT - 20) / 2), 20, 20);
     self.refreshSpinner.hidesWhenStopped = YES;
 
-    [self.refreshHeaderView addSubview:self.refreshLabel];
-    [self.refreshHeaderView addSubview:self.refreshArrow];
-    [self.refreshHeaderView addSubview:self.refreshSpinner];
+    [_refreshHeaderView addSubview:self.refreshLabel];
+    [_refreshHeaderView addSubview:self.refreshArrow];
+    [_refreshHeaderView addSubview:self.refreshSpinner];
+
+    return _refreshHeaderView;
+}
+
+- (void)addPullToRefreshHeader {
     [self.refreshableTableView addSubview:self.refreshHeaderView];
+}
+
+- (void)removePullToRefreshHeader {
+    [self.refreshHeaderView removeFromSuperview];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     if (self.isLoading) return;
+    if (!self.isRefreshable) return;
     self.isDragging = YES;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (!self.isRefreshable) return;
     if (self.isLoading) {
         // Update the content inset, good for section headers
         if (scrollView.contentOffset.y > 0)
@@ -118,6 +149,7 @@
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (self.isLoading) return;
+    if (!self.isRefreshable) return;
     self.isDragging = NO;
     if (scrollView.contentOffset.y <= -REFRESH_HEADER_HEIGHT) {
         // Released above the header
