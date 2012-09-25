@@ -30,7 +30,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface PullRefreshTableViewController : UIViewController
+@interface PullRefreshTableViewController : UIViewController <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UITableView *refreshableTableView;
 @property (nonatomic, strong) UIView *refreshHeaderView;
